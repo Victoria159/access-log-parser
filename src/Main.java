@@ -63,7 +63,8 @@ public class Main {
                 System.out.println("Ошибка при вводе данных");
                 ex2.printStackTrace();
             }
-            System.out.println(test2.getTypeSysCount());
+            System.out.println(test2.nonExistPages.size());
+            System.out.println(test2.getBrowserCount());
         }
     }
 }

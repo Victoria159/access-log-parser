@@ -8,7 +8,8 @@ public class Statistics {
     public LocalDateTime maxTime;
     private HashSet<LogEntry> listPages;
     public HashSet<String> existPages = new HashSet<>();
-    public HashMap<String, Integer> typeSysCount = new HashMap<>();
+    public HashSet <String> nonExistPages = new HashSet<>();
+    public HashMap<String, Integer> browserCount = new HashMap<>();
 
 
     public Statistics() {
@@ -35,28 +36,30 @@ public class Statistics {
 
         String sys = new UserAgent(logEntry.userAgent).toString();
 
-        if (typeSysCount.containsKey(sys)) {
-            int count = typeSysCount.get(sys);
-            typeSysCount.put(sys, count +1);
+        if (browserCount.containsKey(sys)) {
+            int count = browserCount.get(sys);
+            browserCount.put(sys, count +1);
         } else {
-            typeSysCount.put(sys, 1);
+            browserCount.put(sys, 1);
         }
-
+        if (logEntry.responseCode == 404) {
+            nonExistPages.add(logEntry.path);
+        }
 
         listPages.add(logEntry);
     }
-    public HashMap<String, Double> getTypeSysCount () {
+    public HashMap<String, Double> getBrowserCount () {
         HashMap<String, Double> sysStatistic = new HashMap<>();
         int totalSys = 0;
-        for (int count : typeSysCount.values()) {
-            totalSys += count;
-        }
-        for (String sys : typeSysCount.keySet()) {
-            int count = typeSysCount.get(sys);
-            double fraction = (double) count / totalSys;
-            sysStatistic.put(sys, fraction);
-        }
-        return sysStatistic;
+            for (int count : browserCount.values()) {
+                totalSys += count;
+            }
+                for (String sys : browserCount.keySet()) {
+                    int count = browserCount.get(sys);
+                    double fraction = (double) count / totalSys;
+                    sysStatistic.put(sys, fraction);
+                }
+                return sysStatistic;
     }
     public int getTrafficRate() {
         if (listPages.isEmpty()) {
