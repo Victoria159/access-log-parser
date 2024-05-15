@@ -16,7 +16,9 @@ public class UserAgent {
     public String toString() {
         return "" + browser + "";
     }
-
+    public static boolean isBot(String userAgent) {
+        return userAgent.contains("bot");
+    }
     public UserAgent(String userAgentStr) {
         this.userAgentStr = userAgentStr;
         this.typeSys = extractTypeSys(userAgentStr);

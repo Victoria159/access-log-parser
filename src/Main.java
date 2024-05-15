@@ -63,10 +63,13 @@ public class Main {
                 System.out.println("Ошибка при вводе данных");
                 ex2.printStackTrace();
             }
-            System.out.println(test2.getAvgTotalVisitPerHour());
-            System.out.println(test2.getAvgErrorPerHour());
-            System.out.println(test2.userVisit);
-            System.out.println(test2.getAvgVisitUniqUser());
+            //Метод для расчета пиковой посещаемости
+            System.out.println(test2.visitPerSecExclBot);
+            System.out.println(test2.getPeakVisitPerSec());
+            //Метод возвращающий список сайтов
+            System.out.println(test2.getReferringDomains());
+            //Метод расчета максимальной посещаемости одним пользователем
+            System.out.println(test2.maxVisitForUser());
         }
     }
 }
