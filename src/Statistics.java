@@ -4,8 +4,13 @@ import java.util.*;
 
 public class Statistics {
     private int totalTraffic;
+    public int totalError=0;
+    public HashMap <String, Integer> userVisit = new HashMap<>();
+    public int totalVisitQtyNotBot=0;
     public LocalDateTime minTime;
     public LocalDateTime maxTime;
+    public LocalDateTime minTimeExclBot;
+    public LocalDateTime maxTimeExclBot;
     private HashSet<LogEntry> listPages;
     public HashSet<String> existPages = new HashSet<>();
     public HashSet <String> nonExistPages = new HashSet<>();
@@ -14,6 +19,8 @@ public class Statistics {
 
     public Statistics() {
         this.totalTraffic = 0;
+        this.minTimeExclBot = null;
+        this.maxTimeExclBot = null;
         this.minTime = null;
         this.maxTime = null;
         this.listPages = new HashSet<>();
@@ -24,6 +31,15 @@ public class Statistics {
     public void addEntry(LogEntry logEntry) {
         totalTraffic += logEntry.getDataSize();
         LocalDateTime logEntryTime = logEntry.getDateTime();
+        if (!isBot(logEntry.userAgent)) {
+            totalVisitQtyNotBot++;
+            if (this.minTimeExclBot == null || logEntryTime.isBefore(minTimeExclBot)) {
+                minTimeExclBot = logEntryTime;
+            }
+            if (this.maxTimeExclBot == null || logEntryTime.isAfter(maxTimeExclBot)) {
+                maxTimeExclBot = logEntryTime;
+            }
+        }
         if (this.minTime == null || logEntryTime.isBefore(minTime)) {
             minTime = logEntryTime;
         }
@@ -33,7 +49,13 @@ public class Statistics {
         if (logEntry.responseCode == 200) {
             existPages.add(logEntry.path);
         }
+        if (logEntry.responseCode >= 400 && logEntry.responseCode < 600){
+            totalError++;
+        }
 
+        if (!isBot(logEntry.userAgent)){
+            userVisit.put(logEntry.ipAddress, userVisit.getOrDefault(logEntry.ipAddress,0)+1);
+        }
         String sys = new UserAgent(logEntry.userAgent).toString();
 
         if (browserCount.containsKey(sys)) {
@@ -48,6 +70,7 @@ public class Statistics {
 
         listPages.add(logEntry);
     }
+
     public HashMap<String, Double> getBrowserCount () {
         HashMap<String, Double> sysStatistic = new HashMap<>();
         int totalSys = 0;
@@ -68,5 +91,24 @@ public class Statistics {
         Duration duration = Duration.between(minTime, maxTime);
         double hour = duration.toHours();
         return (int) (totalTraffic / hour);
+    }
+    public Double getAvgTotalVisitPerHour (){
+        Duration duration = Duration.between(minTimeExclBot, maxTimeExclBot);
+        double hour = duration.toHours();
+        return totalVisitQtyNotBot/hour;
+    }
+
+    public Double getAvgErrorPerHour (){
+        Duration duration = Duration.between(minTime, maxTime);
+        double hour = duration.toHours();
+        return totalError/hour;
+    }
+
+    public Integer getAvgVisitUniqUser (){
+        return totalVisitQtyNotBot/userVisit.size();
+    }
+
+    public boolean isBot (String userAgent) {
+        return userAgent.contains("bot");
     }
 }

@@ -63,8 +63,10 @@ public class Main {
                 System.out.println("Ошибка при вводе данных");
                 ex2.printStackTrace();
             }
-            System.out.println(test2.nonExistPages.size());
-            System.out.println(test2.getBrowserCount());
+            System.out.println(test2.getAvgTotalVisitPerHour());
+            System.out.println(test2.getAvgErrorPerHour());
+            System.out.println(test2.userVisit);
+            System.out.println(test2.getAvgVisitUniqUser());
         }
     }
 }
